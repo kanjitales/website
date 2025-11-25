@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KanjiTales: Handcrafted Japanese Art</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <style>
+        body {
+            background-image: url('https://i.imgur.com/eEIYSeh.png');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .content-area {
+            background-color: rgba(255, 255, 255, 0.9);
+            min-height: calc(100vh - 8rem);
+        }
+
+        .text-shadow-lg {
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .opacity-100 { opacity: 1; }
+        .opacity-0 { opacity: 0; }
+        
+        .dropdown-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, 0) scaleY(1);
+            height: auto;
+        }
+        .dropdown-hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, 0) scaleY(0);
+            height: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+
+    <!-- Header -->
+    <header id="header" class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-sm shadow-md transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+            
+            <div id="logo-button" class="flex-shrink-0 cursor-pointer">
+                <img
+                    src="https://i.imgur.com/DEo9fyy.png"
+                    alt="KanjiTales Logo"
+                    class="h-10 w-auto"
+                    loading="eager"
+                />
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center space-x-6 h-full">
+                
+                <div class="flex space-x-6 h-full">
+                    
+                    <!-- SHOP Dropdown -->
+                    <div id="shop-nav-wrapper" class="relative h-full flex items-center">
+                        <button id="shop-button" class="nav-link-shop text-sm font-medium uppercase tracking-wider transition duration-150 ease-in-out pb-1 text-gray-600 hover:text-pink-500 hover:border-b-2 hover:border-pink-300" data-page="shop">
+                            SHOP
+                        </button>
+                        <div id="shop-dropdown" class="absolute top-full left-1/2 mt-1 w-60 rounded-lg shadow-2xl bg-white ring-1 ring-black ring-opacity-5 transition-all duration-300 origin-top overflow-hidden z-60 dropdown-hidden transform -translate-x-1/2">
+                            <!-- Dropdown content will be dynamically generated -->
+                        </div>
+                    </div>
+
+                    
+                    <button id="gallery-button" data-page="gallery" class="nav-link text-sm font-medium uppercase tracking-wider transition duration-150 ease-in-out pb-1 text-gray-600 hover:text-pink-500 hover:border-b-2 hover:border-pink-300">
+                        GALLERY
+                    </button>
+
+                    
+                    <button id="contact-button" data-page="contact" class="nav-link text-sm font-medium uppercase tracking-wider transition duration-150 ease-in-out pb-1 text-gray-600 hover:text-pink-500 hover:border-b-2 hover:border-pink-300">
+                        CONTACT US
+                    </button>
+
+                </div>
+
+                <!-- Language Switcher -->
+                <div class="flex space-x-2 text-sm font-semibold">
+                    <button id="lang-en" data-lang="en" class="lang-toggle py-1 px-2 rounded-full transition-colors bg-pink-500 text-white">
+                        EN
+                    </button>
+                    <button id="lang-fr" data-lang="fr" class="lang-toggle py-1 px-2 rounded-full transition-colors text-gray-600 hover:bg-pink-100">
+                        FR
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center space-x-4">
+                <button id="mobile-menu-button" class="text-gray-600 hover:text-pink-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div id="main-content" class="content-area pt-16 min-h-screen">
+        <!-- Loading Spinner -->
+        <div class="text-center p-20 text-gray-600 text-xl" id="loading-spinner">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mb-4"></div>
+            <div>Loading Beautiful Art...</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full py-6 bg-white/70 backdrop-blur-sm border-t border-pink-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            © <span id="current-year"></span> KanjiTales. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // =========================================================
+        // 1. GLOBAL STATE & DATA
+        // =========================================================
+
+        let currentPage = 'home';
+        let currentLanguage = 'en';
+        let selectedCategory = null;
+        let imageSliderInterval;
+        let currentImageIndex = 0;
+        
+        // Hero images
+        const heroImages = [
+            "https://i.imgur.com/G9JMrKD.png", 
+            "https://i.imgur.com/Cg1HmNI.png", 
+            "https://i.imgur.com/OfTZOUF.png", 
+        ];
+        
+        // Category images - 3つのカテゴリーのみ維持
+        const categoryImageUrls = {
+            'Japanese Art': 'https://i.imgur.com/lhRJyAZ.jpeg',
+            'Calligraphy': 'https://i.imgur.com/SIiDUUf.jpeg',
+            'Personalized Gift': 'https://i.imgur.com/du28jZ7.png'
+        };
+
+        // Complete Product Data - すべての商品を含む（カテゴリー修正版）
+        const productMocks = [
+            { 
+                id: 0, 
+                productNumber: 'KT-001',
+                category: 'Calligraphy', 
+                title: 'Blooming in silence', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "時しずか　花はひらきぬ　風のまに<br>Time rests still, the flowers open gently, within the breeze.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "時しずか　花はひらきぬ　風のまに<br>Le temps paisible, les fleurs s'épanouissent, au souffle du vent.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Poem', 'Small Art', 'Spring'], 
+                imageUrl: 'https://i.imgur.com/vI9IMna.jpeg' 
+            },
+            {
+                id: 1,
+                productNumber: 'KT-002',
+                category: 'Calligraphy', 
+                title: 'The Only Day', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "今日という日は二度とこない宝物<br>Today is a treasure that will never come again.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "今日という日は二度とこない宝物<br>Aujourd'hui est un trésor qui ne reviendra jamais.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Calligraphy', 'Quote', 'Small Art'], 
+                imageUrl: 'https://i.imgur.com/G91uesB.jpeg' 
+            },
+            {
+                id: 2,
+                productNumber: 'KT-003',
+                category: 'Japanese Art', 
+                title: 'Once in a Life', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "一期一会 (Ichigo-ichie)<br>Once in a lifetime encounter.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "一期一会 (Ichigo-ichie)<br>Une rencontre qui n'arrive qu'une fois dans une vie.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Calligraphy', 'Quote', 'Spring', 'Zen'], 
+                imageUrl: 'https://i.imgur.com/Wsv7K0b.jpeg' 
+            },
+            {
+                id: 3,
+                productNumber: 'KT-004',
+                category: 'Japanese Art', 
+                title: 'Path of Prayer', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "祈りの道<br>Path of Prayer<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "祈りの道<br>Chemin de prière<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Spiritual'], 
+                imageUrl: 'https://i.imgur.com/toky4IQ.jpeg' 
+            },
+            {
+                id: 4,
+                productNumber: 'KT-005',
+                category: 'Japanese Art', 
+                title: 'Flower', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "花<br>Flower<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "花<br>Fleur<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Nature', 'Spring'], 
+                imageUrl: 'https://i.imgur.com/5F7pcjN.jpeg' 
+            },
+            {
+                id: 5,
+                productNumber: 'KT-006',
+                category: 'Japanese Art', 
+                title: 'Free Your Mind', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "無心<br>No-mind<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "無心<br>Esprit libre<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Zen', 'Calligraphy'], 
+                imageUrl: 'https://i.imgur.com/HJuk4FQ.jpeg' 
+            },
+            {
+                id: 6,
+                productNumber: 'KT-007',
+                category: 'Japanese Art', 
+                title: 'The Sun of The Heart', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "心の太陽<br>The Sun of the Heart<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "心の太陽<br>Le Soleil du cœur<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Heart', 'Inspiration'], 
+                imageUrl: 'https://i.imgur.com/ge0egRk.jpeg' 
+            },
+            {
+                id: 7,
+                productNumber: 'KT-008',
+                category: 'Calligraphy', 
+                title: 'One Night Change', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "人生は一夜で変わらない<br>でも進む道は一夜で変えられる<br><br>Life doesn't change overnight,<br>but the path you take can change overnight.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "人生は一夜で変わらない<br>でも進む道は一夜で変えられる<br><br>La vie ne change pas en une nuit,<br>mais le chemin que l'on prend peut changer en une nuit.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Calligraphy', 'Small Art', 'Quote', 'Inspiration'], 
+                imageUrl: 'https://i.imgur.com/c1V0LhD.jpeg' 
+            },
+            {
+                id: 8,
+                productNumber: 'KT-009',
+                category: 'Calligraphy', 
+                title: 'Support Each Other', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "人は誰かに支えられている<br><br>Everyone is supported by someone.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "人は誰かに支えられている<br><br>Chaque personne est soutenue par quelqu'un.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Calligraphy', 'Small Art', 'Quote', 'Community'], 
+                imageUrl: 'https://i.imgur.com/kZsO20v.jpeg' 
+            },
+            {
+                id: 9,
+                productNumber: 'KT-010',
+                category: 'Calligraphy', 
+                title: 'After Rain', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "雨のあとは良い天気がやってくる<br><br>After rain comes fair weather.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "雨のあとは良い天気がやってくる<br><br>Après la pluie, le beau temps.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Calligraphy', 'Small Art', 'Quote', 'Hope', 'Nature'], 
+                imageUrl: 'https://i.imgur.com/3eH8AY0.jpeg' 
+            },
+            // 新しい商品を追加（カテゴリーを既存のものに統一）
+            {
+                id: 10,
+                productNumber: 'KT-011',
+                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                title: 'Dragon', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "龍<br>Dragon<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "龍<br>Dragon<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Calligraphy', 'Sumi', 'Spiritual'], 
+                imageUrl: 'https://i.imgur.com/5bwZmu6.jpeg' 
+            },
+            {
+                id: 11,
+                productNumber: 'KT-012',
+                category: 'Japanese Art', // Watercolor → Japanese Art
+                title: 'You will do great', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "あなたなら大丈夫<br>You will do fine<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "あなたなら大丈夫<br>Tu t'en sortiras bien<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Message', 'Spring'], 
+                imageUrl: 'https://i.imgur.com/YPt5E0T.jpeg' 
+            },
+            {
+                id: 12,
+                productNumber: 'KT-013',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Changing Color', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "色の移ろいがあなたを強くする<br>Through colors of change, you grow stronger<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "色の移ろいがあなたを強くする<br>À travers les couleurs du changement, tu deviens plus fort-e<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Poem', 'Small Art', 'Autumn'], 
+                imageUrl: 'https://i.imgur.com/uZBIEIE.jpeg' 
+            },
+            {
+                id: 13,
+                productNumber: 'KT-014',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Starting New Day', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "今日の終わりが明日の始まり<br>The light of today guides tomorrow<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "今日の終わりが明日の始まり<br>La lumière d'aujourd'hui guide demain<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Poem', 'Small Art', 'Nature'], 
+                imageUrl: 'https://i.imgur.com/GMFqgSO.jpeg' 
+            },
+            {
+                id: 14,
+                productNumber: 'KT-015',
+                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                title: 'The Future is Full of Light', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "未来は光に満ちている<br>The future is full of light<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "未来は光に満ちている<br>L'avenir est rempli de lumière<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Poem', 'Small Art', 'Calligraphy'], 
+                imageUrl: 'https://i.imgur.com/M83nVHT.jpeg' 
+            },
+            {
+                id: 15,
+                productNumber: 'KT-016',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Cherry Blossoms', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "さくらさく<br>Cherry blossoms bloom<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "さくらさく<br>Les cerisiers fleurissent<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Nature', 'Spring'], 
+                imageUrl: 'https://i.imgur.com/yFfxZPQ.jpeg' 
+            },
+            {
+                id: 16,
+                productNumber: 'KT-017',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Dignity', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "気高く咲いて<br>Bloom with dignity<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "気高く咲いて<br>Fleurir avec dignité<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Nature'], 
+                imageUrl: 'https://i.imgur.com/HGiBBc4.jpeg' 
+            },
+            {
+                id: 17,
+                productNumber: 'KT-018',
+                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                title: 'Your Own Color', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "比べなくていい<br>あなたの光はあなただけの色で輝く<br>No need to compare, your light shines in your own color.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "比べなくていい<br>あなたの光はあなただけの色で輝く<br>Nul besoin de comparer, ta lumière brille dans ta propre couleur.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Poem', 'Small Art', 'Calligraphy'], 
+                imageUrl: 'https://i.imgur.com/zjacIA3.jpeg' 
+            }
+        ].sort((a, b) => a.id - b.id);
+
+        const translations = {
+            en: {
+                shop: "SHOP", gallery: "GALLERY", contact: "CONTACT US",
+                homeTitle: "KanjiTales: Handcrafted Japanese Art",
+                homeSubtitle: "Watercolor, Brush Pen, and Custom Calligraphy Pieces",
+                category1: "Japanese Art", category2: "Calligraphy", category3: "Personalized Gift",
+                viewCollection: "VIEW COLLECTION", shopPageTitle: "Our Art Collection",
+                shopFilter: "Filter by Category: ", galleryPageTitle: "Inspiration Gallery",
+                contactPageTitle: "Get in Touch with KanjiTales",
+                contactBody: "We welcome inquiries about custom orders, collaborations, and general questions. Please use the form below to contact us.",
+                loading: "Loading...", comingSoon: "More beautiful works coming soon!",
+                placeholderGalleryItem: "Behind the Scenes: Art Sketch",
+                allCategories: "All Categories",
+                shopButtonText: "Shop Now",
+                backToShop: "Back to Shop",
+                buyNow: "Add to Cart",
+                detailsTitle: "Product Details",
+                productNumber: "Product Number",
+            },
+            fr: {
+                shop: "BOUTIQUE", gallery: "GALERIE", contact: "NOUS CONTACTER",
+                homeTitle: "KanjiTales : Artisanat Japonais Fait Main",
+                homeSubtitle: "Aquarelle, Stylo-Pinceau, et Pièces de Calligraphie Sur Mesure",
+                category1: "Art Japonais", category2: "Calligraphie", category3: "Cadeaux Personnalisés",
+                viewCollection: "VOIR LA COLLECTION", shopPageTitle: "Notre Collection d'Art",
+                shopFilter: "Filtrer par catégorie : ", galleryPageTitle: "Galerie d'Inspiration",
+                contactPageTitle: "Contacter KanjiTales",
+                contactBody: "Nous accueillons les demandes de commandes personnalisées, de collaborations et les questions générales. Veuillez utiliser le formulaire ci-dessous pour nous contacter.",
+                loading: "Chargement...", comingSoon: "D'autres belles œuvres arrivent bientôt !",
+                placeholderGalleryItem: "Coulisses : Croquis d'Art",
+                allCategories: "Toutes les Catégories",
+                shopButtonText: "Acheter Maintenant",
+                backToShop: "Retour à la Boutique",
+                buyNow: "Ajouter au Panier",
+                detailsTitle: "Détails du Produit",
+                productNumber: "Numéro de produit",
+            },
+        };
+
+        // EmailJS configuration
+        const EMAILJS_CONFIG = {
+            SERVICE_ID: 'service_lbucnb9',
+            TEMPLATE_ID: 'template_lf2wdph',
+            PUBLIC_KEY: 'vhVOs73eXxlYMXBfx'
+        };
+
+        // =========================================================
+        // 2. UTILITY FUNCTIONS
+        // =========================================================
+
+        const getTranslation = () => translations[currentLanguage];
+
+        // DOM creation helper
+        const create = (tag, classes = [], content = '', attributes = {}) => {
+            const el = document.createElement(tag);
+            if (classes.length) el.className = classes.join(' ');
+            if (content) el.innerHTML = content;
+            for (const key in attributes) {
+                el.setAttribute(key, attributes[key]);
+            }
+            return el;
+        };
+
+        // Clear main content
+        const clearMainContent = () => {
+            const main = document.getElementById('main-content');
+            main.innerHTML = '';
+            main.className = 'content-area pt-16 min-h-screen';
+            clearInterval(imageSliderInterval);
+        };
+
+        // Hide loading spinner
+        function hideLoadingSpinner() {
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) spinner.style.display = 'none';
+        }
+
+        // Update navigation styles
+        function updateNavStyles() {
+            const t = getTranslation();
+            
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                const isCurrent = btn.getAttribute('data-page') === currentPage;
+                btn.className = `nav-link text-sm font-medium uppercase tracking-wider transition duration-150 ease-in-out pb-1 ${isCurrent ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-600 hover:text-pink-500 hover:border-b-2 hover:border-pink-300'}`;
+            });
+
+            const shopButton = document.getElementById('shop-button');
+            const isShopActive = currentPage === 'shop' || currentPage === 'productDetail';
+            shopButton.textContent = t.shop;
+            shopButton.className = `nav-link-shop text-sm font-medium uppercase tracking-wider transition duration-150 ease-in-out pb-1 ${isShopActive ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-600 hover:text-pink-500 hover:border-b-2 hover:border-pink-300'}`;
+
+            document.querySelectorAll('.lang-toggle').forEach(btn => {
+                const lang = btn.getAttribute('data-lang');
+                btn.className = `lang-toggle py-1 px-2 rounded-full transition-colors ${lang === currentLanguage ? 'bg-pink-500 text-white' : 'text-gray-600 hover:bg-pink-100'}`;
+            });
+        }
+
+        // Page rendering
+        function renderPage(pageName, params = {}) {
+            currentPage = pageName;
+            clearMainContent();
+            updateNavStyles();
+
+            const main = document.getElementById('main-content');
+            const t = getTranslation();
+
+            switch (pageName) {
+                case 'home':
+                    renderHomePage(main, t);
+                    break;
+                case 'shop':
+                    renderShopPage(main, t);
+                    break;
+                case 'productDetail':
+                    const productId = params.productId !== undefined ? 
+                        parseInt(params.productId) : 
+                        (window.currentProductId || 0);
+                    renderProductDetailPage(main, t, productId);
+                    break;
+                case 'gallery':
+                    renderGalleryPage(main, t);
+                    break;
+                case 'contact':
+                    renderContactPage(main, t);
+                    break;
+                default:
+                    renderHomePage(main, t);
+            }
+            
+            hideLoadingSpinner();
+        }
+
+        // Custom alert
+        function showCustomAlert(title, message, buttonText = 'Close', callback) {
+            const existingAlert = document.getElementById('custom-alert');
+            if (existingAlert) existingAlert.remove();
+            
+            const alertBox = create('div', ['fixed', 'inset-0', 'bg-black/50', 'z-[100]', 'flex', 'items-center', 'justify-center'], '', { id: 'custom-alert' });
+            const modal = create('div', ['bg-white', 'p-8', 'rounded-xl', 'shadow-2xl', 'max-w-sm', 'text-center', 'border', 'border-pink-200']);
+            modal.appendChild(create('p', ['text-xl', 'font-semibold', 'text-gray-800', 'mb-4'], title));
+            modal.appendChild(create('p', ['text-gray-600', 'mb-6'], message));
+            
+            const closeBtn = create('button', ['bg-pink-600', 'text-white', 'py-2', 'px-4', 'rounded-full', 'hover:bg-pink-700', 'transition'], buttonText);
+            closeBtn.onclick = () => {
+                alertBox.remove();
+                if (callback) callback();
+            };
+            modal.appendChild(closeBtn);
+            
+            alertBox.appendChild(modal);
+            document.body.appendChild(alertBox);
+        }
+
+        // =========================================================
+        // 3. PAGE RENDERING FUNCTIONS
+        // =========================================================
+
+        // Image slider
+        function startImageSlider(sliderContainer) {
+            const images = sliderContainer.querySelectorAll('img');
+            
+            const transitionToNext = () => {
+                images[currentImageIndex].classList.remove('opacity-100');
+                images[currentImageIndex].classList.add('opacity-0');
+                
+                currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+                
+                images[currentImageIndex].classList.remove('opacity-0');
+                images[currentImageIndex].classList.add('opacity-100');
+            };
+            
+            images[currentImageIndex].classList.add('opacity-100');
+            imageSliderInterval = setInterval(transitionToNext, 5000);
+        }
+
+        // Home Page
+        function renderHomePage(main, t) {
+            main.classList.add('bg-transparent');
+
+            // Hero Section
+            const hero = create('div', ['relative', 'w-full', 'overflow-hidden', 'bg-black', 'h-96', 'lg:h-[28rem]']);
+            
+            heroImages.forEach((src, index) => {
+                const img = create('img', ['absolute', 'top-0', 'left-0', 'w-full', 'h-full', 'object-cover', 'transition-opacity', 'duration-1000', 'ease-in-out', 'opacity-0'], '', {
+                    src: src,
+                    alt: `KanjiTales Art Slide ${index + 1}`
+                });
+                hero.appendChild(img);
+            });
+            main.appendChild(hero);
+            setTimeout(() => startImageSlider(hero), 100);
+
+            // Category Buttons Section
+            const section = create('section', ['max-w-7xl', 'mx-auto', 'py-16', 'md:py-24', 'px-4', 'sm:px-6', 'lg:px-8', 'mt-8']);
+            const grid = create('div', ['grid', 'grid-cols-1', 'md:grid-cols-3', 'gap-8', 'md:gap-12']);
+            
+            const categories = Object.keys(categoryImageUrls).map(key => ({
+                name: t[Object.keys(translations.en).find(k => translations.en[k] === key)],
+                key: key,
+                imageUrl: categoryImageUrls[key]
+            }));
+
+            categories.forEach(cat => {
+                const catButton = create('button', ['group', 'relative', 'rounded-2xl', 'shadow-2xl', 'hover:shadow-3xl', 'transition-all', 'duration-500', 'transform', 'hover:-translate-y-2', 'overflow-hidden', 'h-80', 'w-full', 'bg-white/90', 'backdrop-blur-md', 'border', 'border-white/30']);
+                catButton.addEventListener('click', () => {
+                    selectedCategory = cat.key;
+                    renderPage('shop');
+                });
+
+                const img = create('img', ['absolute', 'inset-0', 'w-full', 'h-full', 'object-cover', 'transition-transform', 'duration-700', 'group-hover:scale-110'], '', { 
+                    src: cat.imageUrl, 
+                    alt: cat.name 
+                });
+                catButton.appendChild(img);
+
+                const overlay = create('div', ['absolute', 'inset-0', 'bg-gradient-to-t', 'from-black/70', 'via-black/30', 'to-transparent', 'group-hover:from-black/80', 'transition-colors', 'duration-500', 'flex', 'flex-col', 'justify-end', 'items-center', 'p-8', 'text-center']);
+                overlay.appendChild(create('h3', ['text-2xl', 'font-bold', 'text-white', 'mb-3', 'relative', 'z-10', 'text-shadow-lg'], cat.name));
+                overlay.appendChild(create('p', ['text-sm', 'text-pink-200', 'relative', 'z-10', 'border-b-2', 'border-pink-300/70', 'pb-1', 'group-hover:text-pink-300', 'group-hover:border-pink-400', 'transition-colors'], `${t.shopButtonText} &rarr;`));
+                catButton.appendChild(overlay);
+
+                grid.appendChild(catButton);
+            });
+
+            section.appendChild(grid);
+            main.appendChild(section);
+        }
+
+        // Shop Page
+        function renderShopPage(main, t) {
+            main.classList.add('max-w-7xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8');
+            
+            const filterName = selectedCategory ? 
+                t[Object.keys(translations.en).find(k => translations.en[k] === selectedCategory)] : t.allCategories;
+
+            const header = create('div', ['pt-8', 'pb-4']);
+            header.appendChild(create('h1', ['text-4xl', 'font-bold', 'text-gray-800', 'mb-2'], t.shopPageTitle));
+            header.appendChild(create('p', ['text-lg', 'text-pink-600', 'mb-10', 'border-b', 'pb-4'], `${t.shopFilter} <span class="font-semibold">${filterName}</span>`));
+            main.appendChild(header);
+
+            const filteredProducts = productMocks.filter(p => !selectedCategory || p.category === selectedCategory);
+            
+            const grid = create('div', ['grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'gap-8', 'pb-16']);
+            
+            filteredProducts.forEach(product => {
+                const productCategory = t[Object.keys(translations.en).find(k => translations.en[k] === product.category)];
+                
+                const card = create('div', ['bg-white', 'rounded-xl', 'shadow-lg', 'overflow-hidden', 'transition-shadow', 'duration-300', 'hover:shadow-xl', 'group', 'cursor-pointer']);
+                card.onclick = () => renderPage('productDetail', { productId: product.id });
+
+                const imageWrapper = create('div', ['relative', 'overflow-hidden']);
+                const img = create('img', ['w-full', 'h-72', 'object-cover', 'transition-transform', 'duration-500', 'group-hover:scale-105'], '', {
+                    src: product.imageUrl,
+                    alt: product.title
+                });
+                imageWrapper.appendChild(img);
+
+                const overlay = create('div', ['absolute', 'inset-0', 'bg-pink-500/20', 'opacity-0', 'group-hover:opacity-100', 'transition-opacity', 'flex', 'items-center', 'justify-center']);
+                overlay.appendChild(create('span', ['px-4', 'py-2', 'bg-pink-600', 'text-white', 'font-semibold', 'rounded-full', 'hover:bg-pink-700', 'transition'], 'View Details'));
+                imageWrapper.appendChild(overlay);
+
+                card.appendChild(imageWrapper);
+                
+                const textContent = create('div', ['p-4']);
+                textContent.appendChild(create('h3', ['text-xl', 'font-semibold', 'text-gray-800'], product.title));
+                textContent.appendChild(create('p', ['text-sm', 'text-pink-500', 'mb-2'], productCategory));
+                textContent.appendChild(create('p', ['text-2xl', 'font-bold', 'text-gray-900'], product.price));
+                card.appendChild(textContent);
+
+                grid.appendChild(card);
+            });
+
+            main.appendChild(grid);
+        }
+
+        // Product Detail Page
+        function renderProductDetailPage(main, t, productId) {
+            main.classList.add('max-w-5xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8', 'pt-8', 'pb-16');
+            
+            const product = productMocks.find(p => p.id === productId);
+            if (!product) {
+                main.appendChild(create('div', ['text-center', 'py-20'], 'Product Not Found.'));
+                return;
+            }
+
+            window.currentProductId = productId;
+            
+            const productCategory = t[Object.keys(translations.en).find(k => translations.en[k] === product.category)];
+            
+            const backButton = create('button', ['flex', 'items-center', 'text-pink-600', 'hover:text-pink-800', 'mb-6', 'text-sm', 'font-medium', 'transition'], `<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>${t.backToShop}`);
+            backButton.onclick = () => renderPage('shop');
+            main.appendChild(backButton);
+
+            const contentGrid = create('div', ['grid', 'grid-cols-1', 'lg:grid-cols-2', 'gap-10', 'bg-white', 'p-6', 'rounded-xl', 'shadow-2xl']);
+            
+            const imageSection = create('div', ['lg:sticky', 'lg:top-20', 'rounded-lg', 'overflow-hidden']);
+            const mainImg = create('img', ['w-full', 'h-auto', 'object-cover', 'rounded-xl', 'shadow-lg'], '', { 
+                src: product.imageUrl, 
+                alt: product.title 
+            });
+            imageSection.appendChild(mainImg);
+            contentGrid.appendChild(imageSection);
+
+            const infoSection = create('div', ['space-y-6', 'p-2']);
+            
+            infoSection.appendChild(create('span', ['text-sm', 'font-semibold', 'uppercase', 'text-pink-600', 'tracking-wider'], productCategory));
+            infoSection.appendChild(create('h1', ['text-4xl', 'font-extrabold', 'text-gray-900'], product.title));
+            
+            const numberAndPrice = create('div', ['flex', 'justify-between', 'items-center', 'border-b', 'pb-4']);
+            numberAndPrice.appendChild(create('p', ['text-lg', 'font-medium', 'text-gray-600'], `${t.productNumber}: <span class="font-bold">${product.productNumber}</span>`));
+            numberAndPrice.appendChild(create('p', ['text-3xl', 'font-bold', 'text-gray-800'], product.price));
+            infoSection.appendChild(numberAndPrice);
+
+            infoSection.appendChild(create('h2', ['text-xl', 'font-semibold', 'text-gray-800', 'mt-6'], t.detailsTitle));
+            
+            const descriptionKey = (currentLanguage === 'fr' && product.description.fr) ? 'fr' : 'en';
+            const productDescriptionText = product.description[descriptionKey] || product.description;
+
+            const descriptionBody = create('p', ['text-gray-700', 'leading-relaxed'], productDescriptionText);
+            infoSection.appendChild(descriptionBody);
+
+            const tagsDiv = create('div', ['flex', 'flex-wrap', 'gap-2']);
+            product.tags.forEach(tag => {
+                tagsDiv.appendChild(create('span', ['text-xs', 'font-medium', 'px-3', 'py-1', 'rounded-full', 'bg-gray-200', 'text-gray-600'], `#${tag}`));
+            });
+            infoSection.appendChild(tagsDiv);
+
+            const buyButton = create('button', ['w-full', 'py-3', 'mt-8', 'px-6', 'border', 'border-transparent', 'rounded-full', 'shadow-lg', 'text-xl', 'font-bold', 'text-white', 'bg-pink-600', 'hover:bg-pink-700', 'focus:outline-none', 'focus:ring-4', 'focus:ring-pink-300', 'transition', 'duration-200'], t.buyNow);
+            buyButton.onclick = () => {
+                showCustomAlert(
+                    `Added "${product.title}" to Cart!`, 
+                    "This is a demo feature. In a real application, this would add the item to your shopping cart.", 
+                    'Continue Shopping'
+                );
+            };
+            infoSection.appendChild(buyButton);
+
+            contentGrid.appendChild(infoSection);
+            main.appendChild(contentGrid);
+        }
+
+        // Gallery Page
+        function renderGalleryPage(main, t) {
+            main.classList.add('max-w-7xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8');
+            main.appendChild(create('h1', ['text-4xl', 'font-bold', 'text-gray-800', 'mb-10', 'border-b', 'pb-4', 'pt-8'], t.galleryPageTitle));
+
+            const galleryItems = Array.from({ length: 6 }).map((_, i) => ({
+                id: i + 1,
+                caption: `${t.placeholderGalleryItem} - ${i + 1}`,
+                imageUrl: `https://placehold.co/400x300/f9fafb/2563eb?text=Gallery+Item+${i+1}`
+            }));
+
+            const grid = create('div', ['grid', 'grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-3', 'gap-4', 'pb-16']);
+            
+            galleryItems.forEach(item => {
+                const card = create('div', ['relative', 'overflow-hidden', 'rounded-xl', 'shadow-lg', 'group']);
+                
+                const img = create('img', ['w-full', 'h-full', 'object-cover', 'aspect-[4/3]', 'transition-transform', 'duration-500', 'group-hover:scale-105'], '', { 
+                    src: item.imageUrl, 
+                    alt: item.caption 
+                });
+                card.appendChild(img);
+
+                const overlay = create('div', ['absolute', 'inset-0', 'bg-black/50', 'opacity-0', 'group-hover:opacity-100', 'transition-opacity', 'duration-300', 'flex', 'items-center', 'justify-center']);
+                overlay.appendChild(create('span', ['text-white', 'text-lg', 'font-semibold'], 'Zoom'));
+                card.appendChild(overlay);
+
+                grid.appendChild(card);
+            });
+
+            main.appendChild(grid);
+        }
+
+        // Contact Page
+        function renderContactPage(main, t) {
+            main.classList.add('max-w-3xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8');
+
+            const container = create('div', ['pt-8', 'pb-16']);
+            container.appendChild(create('h1', ['text-4xl', 'font-bold', 'text-gray-800', 'mb-4', 'border-b', 'pb-4'], t.contactPageTitle));
+            container.appendChild(create('p', ['text-gray-600', 'mb-8'], t.contactBody));
+            
+            const form = create('form', ['bg-white', 'p-8', 'rounded-xl', 'shadow-2xl', 'space-y-6']);
+            form.innerHTML = `
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-pink-500 focus:ring-pink-500 transition">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-pink-500 focus:ring-pink-500 transition">
+                </div>
+                <div>
+                    <label for="subject" class="block text-sm font-medium text-gray-700">Subject</label>
+                    <input type="text" id="subject" name="subject" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-pink-500 focus:ring-pink-500 transition">
+                </div>
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                    <textarea id="message" name="message" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-pink-500 focus:ring-pink-500 transition"></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-md text-base font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition">
+                        Send Message
+                    </button>
+                </div>
+            `;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const submitButton = form.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                
+                submitButton.textContent = 'Sending...';
+                submitButton.disabled = true;
+                
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+
+                try {
+                    // Initialize EmailJS if not already done
+                    if (typeof emailjs !== 'undefined') {
+                        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+                        
+                        await emailjs.send(
+                            EMAILJS_CONFIG.SERVICE_ID,
+                            EMAILJS_CONFIG.TEMPLATE_ID,
+                            {
+                                from_name: name,
+                                from_email: email,
+                                subject: subject,
+                                message: message,
+                                to_email: 'your.name.meaning.jp@gmail.com'
+                            }
+                        );
+
+                        showCustomAlert(
+                            `Thank you, ${name}!`, 
+                            `Your message has been sent successfully. We will get back to you soon.`, 
+                            'Close',
+                            () => form.reset()
+                        );
+                    } else {
+                        throw new Error('EmailJS not loaded');
+                    }
+                } catch (error) {
+                    console.error('Email sending failed:', error);
+                    showCustomAlert(
+                        'Demo Mode', 
+                        'This is a demo contact form. In a real application, your message would be sent successfully.', 
+                        'Close'
+                    );
+                } finally {
+                    submitButton.textContent = originalText;
+                    submitButton.disabled = false;
+                }
+            });
+
+            container.appendChild(form);
+            main.appendChild(container);
+        }
+
+        // =========================================================
+        // 4. INITIALIZATION
+        // =========================================================
+
+        function initEventListeners() {
+            // Navigation
+            document.addEventListener('click', (e) => {
+                const target = e.target.closest('.nav-link, #logo-button, .nav-link-shop');
+                
+                if (target) {
+                    if (target.id === 'logo-button') {
+                        selectedCategory = null;
+                        renderPage('home');
+                    } else {
+                        const page = target.getAttribute('data-page');
+                        if (page === 'shop' || page === 'home') {
+                             selectedCategory = null;
+                        }
+                        renderPage(page);
+                    }
+                }
+                
+                // Language toggle
+                if (e.target.classList.contains('lang-toggle')) {
+                    const lang = e.target.getAttribute('data-lang');
+                    if (currentLanguage !== lang) {
+                        currentLanguage = lang;
+                        renderPage(currentPage);
+                    }
+                }
+            });
+
+            // Shop Dropdown
+            const shopDropdown = document.getElementById('shop-dropdown');
+            const shopNavWrapper = document.getElementById('shop-nav-wrapper');
+            
+            const renderShopDropdownContent = () => {
+                const t = getTranslation();
+                const dropdownContent = create('div', ['py-1']);
+                
+                const allBtn = create('button', ['w-full', 'text-left', 'px-4', 'py-2', 'text-sm', 'text-gray-700', 'hover:bg-pink-50', 'transition', 'font-semibold'], t.allCategories);
+                allBtn.onclick = () => { selectedCategory = null; renderPage('shop'); toggleDropdown(false); };
+                dropdownContent.appendChild(allBtn);
+
+                const categories = Object.keys(categoryImageUrls);
+                categories.forEach(key => {
+                    const categoryName = t[Object.keys(translations.en).find(k => translations.en[k] === key)];
+                    const btn = create('button', ['w-full', 'text-left', 'px-4', 'py-2', 'text-sm', 'text-gray-700', 'hover:bg-pink-50', 'transition'], categoryName);
+                    btn.onclick = () => { selectedCategory = key; renderPage('shop'); toggleDropdown(false); };
+                    dropdownContent.appendChild(btn);
+                });
+                
+                shopDropdown.innerHTML = '';
+                shopDropdown.appendChild(dropdownContent);
+            };
+            
+            const toggleDropdown = (show) => {
+                if (show) {
+                    renderShopDropdownContent();
+                    shopDropdown.classList.remove('dropdown-hidden');
+                    shopDropdown.classList.add('dropdown-visible');
+                } else {
+                    shopDropdown.classList.remove('dropdown-visible');
+                    shopDropdown.classList.add('dropdown-hidden');
+                }
+            };
+
+            shopNavWrapper.addEventListener('mouseenter', () => toggleDropdown(true));
+            shopNavWrapper.addEventListener('mouseleave', () => toggleDropdown(false));
+        }
+
+        // Initialize the application
+        window.onload = function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            initEventListeners();
+            
+            // Start the application immediately without waiting for Firebase
+            setTimeout(() => {
+                renderPage('home');
+            }, 500);
+        };
+
+    </script>
+</body>
+</html>
