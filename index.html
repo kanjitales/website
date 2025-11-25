@@ -162,14 +162,14 @@
             "https://i.imgur.com/OfTZOUF.png", 
         ];
         
-        // Category images
+        // Category images - 3つのカテゴリーのみ維持
         const categoryImageUrls = {
             'Japanese Art': 'https://i.imgur.com/lhRJyAZ.jpeg',
             'Calligraphy': 'https://i.imgur.com/SIiDUUf.jpeg',
-            'Personalized Gift': 'https://i.imgur.com/du28jZ7.png',
+            'Personalized Gift': 'https://i.imgur.com/du28jZ7.png'
         };
 
-        // Complete Product Data - すべての商品を復元
+        // Complete Product Data - すべての商品を含む（カテゴリー修正版）
         const productMocks = [
             { 
                 id: 0, 
@@ -301,6 +301,111 @@
                 tags: ['Calligraphy', 'Small Art', 'Quote', 'Hope', 'Nature'], 
                 imageUrl: 'https://i.imgur.com/3eH8AY0.jpeg' 
             },
+            // 新しい商品を追加（カテゴリーを既存のものに統一）
+            {
+                id: 10,
+                productNumber: 'KT-011',
+                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                title: 'Dragon', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "龍<br>Dragon<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "龍<br>Dragon<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Calligraphy', 'Sumi', 'Spiritual'], 
+                imageUrl: 'https://i.imgur.com/5bwZmu6.jpeg' 
+            },
+            {
+                id: 11,
+                productNumber: 'KT-012',
+                category: 'Japanese Art', // Watercolor → Japanese Art
+                title: 'You will do great', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "あなたなら大丈夫<br>You will do fine<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "あなたなら大丈夫<br>Tu t'en sortiras bien<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Message', 'Spring'], 
+                imageUrl: 'https://i.imgur.com/YPt5E0T.jpeg' 
+            },
+            {
+                id: 12,
+                productNumber: 'KT-013',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Changing Color', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "色の移ろいがあなたを強くする<br>Through colors of change, you grow stronger<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "色の移ろいがあなたを強くする<br>À travers les couleurs du changement, tu deviens plus fort-e<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Poem', 'Small Art', 'Autumn'], 
+                imageUrl: 'https://i.imgur.com/uZBIEIE.jpeg' 
+            },
+            {
+                id: 13,
+                productNumber: 'KT-014',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Starting New Day', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "今日の終わりが明日の始まり<br>The light of today guides tomorrow<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "今日の終わりが明日の始まり<br>La lumière d'aujourd'hui guide demain<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Poem', 'Small Art', 'Nature'], 
+                imageUrl: 'https://i.imgur.com/GMFqgSO.jpeg' 
+            },
+            {
+                id: 14,
+                productNumber: 'KT-015',
+                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                title: 'The Future is Full of Light', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "未来は光に満ちている<br>The future is full of light<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "未来は光に満ちている<br>L'avenir est rempli de lumière<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Poem', 'Small Art', 'Calligraphy'], 
+                imageUrl: 'https://i.imgur.com/M83nVHT.jpeg' 
+            },
+            {
+                id: 15,
+                productNumber: 'KT-016',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Cherry Blossoms', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "さくらさく<br>Cherry blossoms bloom<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "さくらさく<br>Les cerisiers fleurissent<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Nature', 'Spring'], 
+                imageUrl: 'https://i.imgur.com/yFfxZPQ.jpeg' 
+            },
+            {
+                id: 16,
+                productNumber: 'KT-017',
+                category: 'Japanese Art', // Watercolour → Japanese Art
+                title: 'Dignity', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "気高く咲いて<br>Bloom with dignity<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "気高く咲いて<br>Fleurir avec dignité<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Watercolor', 'Small Art', 'Nature'], 
+                imageUrl: 'https://i.imgur.com/HGiBBc4.jpeg' 
+            },
+            {
+                id: 17,
+                productNumber: 'KT-018',
+                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                title: 'Your Own Color', 
+                price: 'CHF 13.00', 
+                description: {
+                    en: "比べなくていい<br>あなたの光はあなただけの色で輝く<br>No need to compare, your light shines in your own color.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
+                    fr: "比べなくていい<br>あなたの光はあなただけの色で輝く<br>Nul besoin de comparer, ta lumière brille dans ta propre couleur.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
+                }, 
+                tags: ['Poem', 'Small Art', 'Calligraphy'], 
+                imageUrl: 'https://i.imgur.com/zjacIA3.jpeg' 
+            }
         ].sort((a, b) => a.id - b.id);
 
         const translations = {
