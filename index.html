@@ -740,7 +740,7 @@
         }
 
         // =========================================================
-        // 3. STRIPE CHECKOUT FUNCTIONS
+        // 3. STRIPE CHECKOUT FUNCTIONS - UPDATED
         // =========================================================
 
         async function handleCheckout() {
@@ -756,7 +756,9 @@
                     quantity: item.quantity,
                 }));
 
-                const response = await fetch('/.netlify/functions/create-checkout-session', {
+                console.log('Sending checkout request with items:', lineItems);
+
+                const response = await fetch('/.netlify/functions/create-checkout', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -769,8 +771,10 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Checkout failed');
+                    throw new Error(data.error || 'Checkout failed: ' + JSON.stringify(data));
                 }
+
+                console.log('Checkout session created:', data.id);
 
                 // Stripe Checkoutにリダイレクト
                 const result = await stripe.redirectToCheckout({
@@ -778,15 +782,14 @@
                 });
 
                 if (result.error) {
-                    showCustomAlert('Checkout Error', result.error.message, 'OK');
+                    throw new Error(result.error.message);
                 }
 
             } catch (error) {
                 console.error('Checkout error:', error);
-                // Fallback: Show demo message
                 showCustomAlert(
-                    'Demo Checkout',
-                    'This is a demo store. In a real application, you would be redirected to Stripe Checkout to complete your purchase.',
+                    'Checkout Error',
+                    'Failed to proceed to checkout: ' + error.message,
                     'OK'
                 );
             }
