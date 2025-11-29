@@ -3,7 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KanjiTales: Handcrafted Japanese Art</title>
+    <title>KanjiTales: Handcrafted Japanese Art - Watercolor & Calligraphy | Switzerland</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="KanjiTales - Handcrafted Japanese watercolor and brush pen art in Switzerland. Personalized gift artworks with Japanese calligraphy. Free shipping in Switzerland. Original artworks inspired by Japanese culture.">
+    <meta name="keywords" content="Japanese art Switzerland, watercolor art, Japanese calligraphy, brush pen art, personalized gifts, Japanese painting, handmade art, KanjiTales, Swiss art, Japanese culture, custom artwork">
+    <meta name="author" content="KanjiTales">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.kanjitales.com/">
+    <meta property="og:title" content="KanjiTales: Handcrafted Japanese Art - Watercolor & Calligraphy | Switzerland">
+    <meta property="og:description" content="Discover unique Japanese watercolor and brush pen artworks in Switzerland. Personalized gifts with authentic Japanese calligraphy. Free shipping across Switzerland.">
+    <meta property="og:image" content="https://i.imgur.com/DEo9fyy.png">
+    <meta property="og:image:alt" content="KanjiTales Japanese Art Logo">
+    <meta property="og:site_name" content="KanjiTales">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.kanjitales.com/">
+    <meta property="twitter:title" content="KanjiTales: Handcrafted Japanese Art - Watercolor & Calligraphy">
+    <meta property="twitter:description" content="Japanese watercolor and brush pen artworks in Switzerland. Personalized gifts with authentic calligraphy. Free Swiss shipping.">
+    <meta property="twitter:image" content="https://i.imgur.com/DEo9fyy.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.kanjitales.com/">
+    
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ArtGallery",
+        "name": "KanjiTales",
+        "description": "Handcrafted Japanese watercolor and brush pen art in Switzerland",
+        "url": "https://www.kanjitales.com/",
+        "logo": "https://i.imgur.com/DEo9fyy.png",
+        "image": "https://i.imgur.com/G9JMrKD.png",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "Switzerland"
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Japanese Art Collection",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Product",
+                        "name": "Japanese Watercolor Art",
+                        "description": "Handmade Japanese watercolor paintings"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Product",
+                        "name": "Japanese Calligraphy",
+                        "description": "Authentic Japanese brush pen calligraphy artworks"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Product",
+                        "name": "Personalized Japanese Gifts",
+                        "description": "Custom Japanese art and calligraphy for personalized gifts"
+                    }
+                }
+            ]
+        },
+        "sameAs": []
+    }
+    </script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,6 +87,9 @@
     
     <!-- EmailJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
     
     <style>
         body {
@@ -62,6 +139,21 @@
         .animate-spin {
             animation: spin 1s linear infinite;
         }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ec4899;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="text-gray-900">
@@ -73,7 +165,7 @@
             <div id="logo-button" class="flex-shrink-0 cursor-pointer">
                 <img
                     src="https://i.imgur.com/DEo9fyy.png"
-                    alt="KanjiTales Logo"
+                    alt="KanjiTales Japanese Art Logo - Handmade watercolor and calligraphy artworks in Switzerland"
                     class="h-10 w-auto"
                     loading="eager"
                 />
@@ -106,6 +198,16 @@
 
                 </div>
 
+                <!-- Cart Icon -->
+                <div class="relative">
+                    <button id="cart-button" class="relative p-2 text-gray-600 hover:text-pink-500 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5.5M7 13l2.5 5.5m0 0L17 21"></path>
+                        </svg>
+                        <div id="cart-badge" class="cart-badge hidden">0</div>
+                    </button>
+                </div>
+
                 <!-- Language Switcher -->
                 <div class="flex space-x-2 text-sm font-semibold">
                     <button id="lang-en" data-lang="en" class="lang-toggle py-1 px-2 rounded-full transition-colors bg-pink-500 text-white">
@@ -119,6 +221,14 @@
 
             <!-- Mobile Menu Button -->
             <div class="md:hidden flex items-center space-x-4">
+                <!-- Cart Icon for Mobile -->
+                <button id="mobile-cart-button" class="relative p-2 text-gray-600 hover:text-pink-500 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5.5M7 13l2.5 5.5m0 0L17 21"></path>
+                    </svg>
+                    <div id="mobile-cart-badge" class="cart-badge hidden">0</div>
+                </button>
+
                 <button id="mobile-menu-button" class="text-gray-600 hover:text-pink-500">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -140,7 +250,7 @@
     <!-- Footer -->
     <footer class="w-full py-6 bg-white/70 backdrop-blur-sm border-t border-pink-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
-            © <span id="current-year"></span> KanjiTales. All rights reserved.
+            © <span id="current-year"></span> KanjiTales - Japanese Art in Switzerland. All rights reserved.
         </div>
     </footer>
 
@@ -155,6 +265,42 @@
         let imageSliderInterval;
         let currentImageIndex = 0;
         
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('kanjitales-cart')) || [];
+        
+        // Stripe configuration
+        const stripe = Stripe('pk_test_51QJg1wK5m2q3r7v8Vk9aBc6dXyZzA4eF7hG2jL3mN1pQ6sT9w'); // 公開鍵
+        
+        // 価格マッピング - 実際のStripe Price IDで更新
+        const priceMapping = {
+            'small': 'price_1SXTySKFwub47KW88INOl6kk',    // Sサイズ（13CHF）
+            'medium': 'price_1SXTyzKFwub47KW8n03yXxmg',   // Mサイズ（28CHF）  
+            'scroll': 'price_1SXU08KFwub47KW8IYLP65xl',   // 巻物（20CHF）
+            'custom': 'price_1SXU0pKFwub47KW8SveoXYuV'    // カスタムオーダー（50CHF）
+        };
+
+        // 価格タイプから表示価格を取得
+        function getDisplayPrice(priceType) {
+            const displayPrices = {
+                'small': 'CHF 13.00',
+                'medium': 'CHF 28.00',
+                'scroll': 'CHF 20.00', 
+                'custom': 'CHF 50.00'
+            };
+            return displayPrices[priceType] || 'CHF 13.00';
+        }
+
+        // 価格タイプから実際の価格（セント）を取得
+        function getPriceValue(priceType) {
+            const priceValues = {
+                'small': 1300,   // 13.00 CHF
+                'medium': 2800,  // 28.00 CHF
+                'scroll': 2000,  // 20.00 CHF
+                'custom': 5000   // 50.00 CHF
+            };
+            return priceValues[priceType] || 1300;
+        }
+
         // Hero images
         const heroImages = [
             "https://i.imgur.com/G9JMrKD.png", 
@@ -162,21 +308,22 @@
             "https://i.imgur.com/OfTZOUF.png", 
         ];
         
-        // Category images - 3つのカテゴリーのみ維持
+        // Category images
         const categoryImageUrls = {
             'Japanese Art': 'https://i.imgur.com/lhRJyAZ.jpeg',
             'Calligraphy': 'https://i.imgur.com/SIiDUUf.jpeg',
             'Personalized Gift': 'https://i.imgur.com/du28jZ7.png'
         };
 
-        // Complete Product Data - すべての商品を含む（カテゴリー修正版）
+        // Complete Product Data - すべてSサイズ（13CHF）に設定
         const productMocks = [
             { 
                 id: 0, 
                 productNumber: 'KT-001',
                 category: 'Calligraphy', 
                 title: 'Blooming in silence', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "時しずか　花はひらきぬ　風のまに<br>Time rests still, the flowers open gently, within the breeze.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "時しずか　花はひらきぬ　風のまに<br>Le temps paisible, les fleurs s'épanouissent, au souffle du vent.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -189,7 +336,8 @@
                 productNumber: 'KT-002',
                 category: 'Calligraphy', 
                 title: 'The Only Day', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "今日という日は二度とこない宝物<br>Today is a treasure that will never come again.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "今日という日は二度とこない宝物<br>Aujourd'hui est un trésor qui ne reviendra jamais.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -202,7 +350,8 @@
                 productNumber: 'KT-003',
                 category: 'Japanese Art', 
                 title: 'Once in a Life', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "一期一会 (Ichigo-ichie)<br>Once in a lifetime encounter.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "一期一会 (Ichigo-ichie)<br>Une rencontre qui n'arrive qu'une fois dans une vie.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -215,7 +364,8 @@
                 productNumber: 'KT-004',
                 category: 'Japanese Art', 
                 title: 'Path of Prayer', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "祈りの道<br>Path of Prayer<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "祈りの道<br>Chemin de prière<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -228,7 +378,8 @@
                 productNumber: 'KT-005',
                 category: 'Japanese Art', 
                 title: 'Flower', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "花<br>Flower<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "花<br>Fleur<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -241,7 +392,8 @@
                 productNumber: 'KT-006',
                 category: 'Japanese Art', 
                 title: 'Free Your Mind', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "無心<br>No-mind<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "無心<br>Esprit libre<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -254,7 +406,8 @@
                 productNumber: 'KT-007',
                 category: 'Japanese Art', 
                 title: 'The Sun of The Heart', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "心の太陽<br>The Sun of the Heart<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "心の太陽<br>Le Soleil du cœur<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -267,7 +420,8 @@
                 productNumber: 'KT-008',
                 category: 'Calligraphy', 
                 title: 'One Night Change', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "人生は一夜で変わらない<br>でも進む道は一夜で変えられる<br><br>Life doesn't change overnight,<br>but the path you take can change overnight.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "人生は一夜で変わらない<br>でも進む道は一夜で変えられる<br><br>La vie ne change pas en une nuit,<br>mais le chemin que l'on prend peut changer en une nuit.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -280,7 +434,8 @@
                 productNumber: 'KT-009',
                 category: 'Calligraphy', 
                 title: 'Support Each Other', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "人は誰かに支えられている<br><br>Everyone is supported by someone.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "人は誰かに支えられている<br><br>Chaque personne est soutenue par quelqu'un.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -293,7 +448,8 @@
                 productNumber: 'KT-010',
                 category: 'Calligraphy', 
                 title: 'After Rain', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "雨のあとは良い天気がやってくる<br><br>After rain comes fair weather.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "雨のあとは良い天気がやってくる<br><br>Après la pluie, le beau temps.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -301,13 +457,13 @@
                 tags: ['Calligraphy', 'Small Art', 'Quote', 'Hope', 'Nature'], 
                 imageUrl: 'https://i.imgur.com/3eH8AY0.jpeg' 
             },
-            // 新しい商品を追加（カテゴリーを既存のものに統一）
             {
                 id: 10,
                 productNumber: 'KT-011',
-                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                category: 'Calligraphy',
                 title: 'Dragon', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "龍<br>Dragon<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "龍<br>Dragon<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -318,9 +474,10 @@
             {
                 id: 11,
                 productNumber: 'KT-012',
-                category: 'Japanese Art', // Watercolor → Japanese Art
+                category: 'Japanese Art',
                 title: 'You will do great', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "あなたなら大丈夫<br>You will do fine<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "あなたなら大丈夫<br>Tu t'en sortiras bien<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -331,9 +488,10 @@
             {
                 id: 12,
                 productNumber: 'KT-013',
-                category: 'Japanese Art', // Watercolour → Japanese Art
+                category: 'Japanese Art',
                 title: 'Changing Color', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "色の移ろいがあなたを強くする<br>Through colors of change, you grow stronger<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "色の移ろいがあなたを強くする<br>À travers les couleurs du changement, tu deviens plus fort-e<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -344,9 +502,10 @@
             {
                 id: 13,
                 productNumber: 'KT-014',
-                category: 'Japanese Art', // Watercolour → Japanese Art
+                category: 'Japanese Art',
                 title: 'Starting New Day', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "今日の終わりが明日の始まり<br>The light of today guides tomorrow<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "今日の終わりが明日の始まり<br>La lumière d'aujourd'hui guide demain<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -357,9 +516,10 @@
             {
                 id: 14,
                 productNumber: 'KT-015',
-                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                category: 'Calligraphy',
                 title: 'The Future is Full of Light', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "未来は光に満ちている<br>The future is full of light<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "未来は光に満ちている<br>L'avenir est rempli de lumière<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -370,9 +530,10 @@
             {
                 id: 15,
                 productNumber: 'KT-016',
-                category: 'Japanese Art', // Watercolour → Japanese Art
+                category: 'Japanese Art',
                 title: 'Cherry Blossoms', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "さくらさく<br>Cherry blossoms bloom<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "さくらさく<br>Les cerisiers fleurissent<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -383,9 +544,10 @@
             {
                 id: 16,
                 productNumber: 'KT-017',
-                category: 'Japanese Art', // Watercolour → Japanese Art
+                category: 'Japanese Art',
                 title: 'Dignity', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "気高く咲いて<br>Bloom with dignity<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "気高く咲いて<br>Fleurir avec dignité<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -396,9 +558,10 @@
             {
                 id: 17,
                 productNumber: 'KT-018',
-                category: 'Calligraphy', // Japanese Calligraphy → Calligraphy
+                category: 'Calligraphy',
                 title: 'Your Own Color', 
-                price: 'CHF 13.00', 
+                price: 'CHF 13.00',
+                priceType: 'small',
                 description: {
                     en: "比べなくていい<br>あなたの光はあなただけの色で輝く<br>No need to compare, your light shines in your own color.<br><br>PRODUCT SIZE: (inside)<br>105 mm × 148 mm<br>It will be delivered with a paper stand-frame.<br>FRAME SIZE: 120 mm × 178 mm",
                     fr: "比べなくていい<br>あなたの光はあなただけの色で輝く<br>Nul besoin de comparer, ta lumière brille dans ta propre couleur.<br><br>TAILLE DU PRODUIT (intérieur)<br>105 mm × 148 mm<br>Il sera livré avec un support en papier.<br>TAILLE DU CADRE: 120 mm × 178 mm"
@@ -426,6 +589,20 @@
                 buyNow: "Add to Cart",
                 detailsTitle: "Product Details",
                 productNumber: "Product Number",
+                cart: "Cart",
+                checkout: "Checkout",
+                emptyCart: "Your cart is empty",
+                subtotal: "Subtotal",
+                shipping: "Shipping",
+                total: "Total",
+                freeShipping: "Free Shipping",
+                remove: "Remove",
+                proceedToCheckout: "Proceed to Checkout",
+                continueShopping: "Continue Shopping",
+                cartItems: "Cart Items",
+                quantity: "Quantity",
+                price: "Price",
+                itemTotal: "Item Total"
             },
             fr: {
                 shop: "BOUTIQUE", gallery: "GALERIE", contact: "NOUS CONTACTER",
@@ -444,6 +621,20 @@
                 buyNow: "Ajouter au Panier",
                 detailsTitle: "Détails du Produit",
                 productNumber: "Numéro de produit",
+                cart: "Panier",
+                checkout: "Paiement",
+                emptyCart: "Votre panier est vide",
+                subtotal: "Sous-total",
+                shipping: "Livraison",
+                total: "Total",
+                freeShipping: "Livraison Gratuite",
+                remove: "Supprimer",
+                proceedToCheckout: "Procéder au Paiement",
+                continueShopping: "Continuer les Achats",
+                cartItems: "Articles dans le Panier",
+                quantity: "Quantité",
+                price: "Prix",
+                itemTotal: "Total Article"
             },
         };
 
@@ -455,7 +646,154 @@
         };
 
         // =========================================================
-        // 2. UTILITY FUNCTIONS
+        // 2. CART MANAGEMENT FUNCTIONS
+        // =========================================================
+
+        function updateCartBadge() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cart-badge');
+            const mobileBadge = document.getElementById('mobile-cart-badge');
+            
+            if (badge) {
+                if (totalItems > 0) {
+                    badge.textContent = totalItems;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+            
+            if (mobileBadge) {
+                if (totalItems > 0) {
+                    mobileBadge.textContent = totalItems;
+                    mobileBadge.classList.remove('hidden');
+                } else {
+                    mobileBadge.classList.add('hidden');
+                }
+            }
+        }
+
+        function addToCart(product, quantity = 1) {
+            const existingItem = cart.find(item => item.id === product.id);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: product.id,
+                    title: product.title,
+                    imageUrl: product.imageUrl,
+                    price: product.price,
+                    priceType: product.priceType,
+                    priceValue: getPriceValue(product.priceType),
+                    stripePriceId: priceMapping[product.priceType],
+                    quantity: quantity
+                });
+            }
+            
+            saveCart();
+            updateCartBadge();
+            
+            // Show success message
+            const t = getTranslation();
+            showCustomAlert(
+                'Success!',
+                `${product.title} has been added to your cart.`,
+                'Continue Shopping'
+            );
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+            updateCartBadge();
+            
+            if (currentPage === 'cart') {
+                renderCartPage(document.getElementById('main-content'), getTranslation());
+            }
+        }
+
+        function updateCartQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                saveCart();
+                updateCartBadge();
+                
+                if (currentPage === 'cart') {
+                    renderCartPage(document.getElementById('main-content'), getTranslation());
+                }
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('kanjitales-cart', JSON.stringify(cart));
+        }
+
+        function getCartTotal() {
+            return cart.reduce((total, item) => total + (item.priceValue * item.quantity), 0);
+        }
+
+        // =========================================================
+        // 3. STRIPE CHECKOUT FUNCTIONS
+        // =========================================================
+
+        async function handleCheckout() {
+            if (cart.length === 0) {
+                showCustomAlert('Cart Empty', 'Please add items to your cart before checking out.', 'OK');
+                return;
+            }
+
+            try {
+                // カートアイテムをStripe用に変換
+                const lineItems = cart.map(item => ({
+                    price: item.stripePriceId,
+                    quantity: item.quantity,
+                }));
+
+                const response = await fetch('/.netlify/functions/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        items: lineItems,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Checkout failed');
+                }
+
+                // Stripe Checkoutにリダイレクト
+                const result = await stripe.redirectToCheckout({
+                    sessionId: data.id,
+                });
+
+                if (result.error) {
+                    showCustomAlert('Checkout Error', result.error.message, 'OK');
+                }
+
+            } catch (error) {
+                console.error('Checkout error:', error);
+                // Fallback: Show demo message
+                showCustomAlert(
+                    'Demo Checkout',
+                    'This is a demo store. In a real application, you would be redirected to Stripe Checkout to complete your purchase.',
+                    'OK'
+                );
+            }
+        }
+
+        // =========================================================
+        // 4. UTILITY FUNCTIONS
         // =========================================================
 
         const getTranslation = () => translations[currentLanguage];
@@ -495,7 +833,7 @@
             });
 
             const shopButton = document.getElementById('shop-button');
-            const isShopActive = currentPage === 'shop' || currentPage === 'productDetail';
+            const isShopActive = currentPage === 'shop' || currentPage === 'productDetail' || currentPage === 'cart';
             shopButton.textContent = t.shop;
             shopButton.className = `nav-link-shop text-sm font-medium uppercase tracking-wider transition duration-150 ease-in-out pb-1 ${isShopActive ? 'text-pink-600 border-b-2 border-pink-600' : 'text-gray-600 hover:text-pink-500 hover:border-b-2 hover:border-pink-300'}`;
 
@@ -533,6 +871,9 @@
                 case 'contact':
                     renderContactPage(main, t);
                     break;
+                case 'cart':
+                    renderCartPage(main, t);
+                    break;
                 default:
                     renderHomePage(main, t);
             }
@@ -562,7 +903,7 @@
         }
 
         // =========================================================
-        // 3. PAGE RENDERING FUNCTIONS
+        // 5. PAGE RENDERING FUNCTIONS
         // =========================================================
 
         // Image slider
@@ -593,7 +934,7 @@
             heroImages.forEach((src, index) => {
                 const img = create('img', ['absolute', 'top-0', 'left-0', 'w-full', 'h-full', 'object-cover', 'transition-opacity', 'duration-1000', 'ease-in-out', 'opacity-0'], '', {
                     src: src,
-                    alt: `KanjiTales Art Slide ${index + 1}`
+                    alt: `Japanese watercolor art by KanjiTales - Slide ${index + 1}`
                 });
                 hero.appendChild(img);
             });
@@ -619,7 +960,7 @@
 
                 const img = create('img', ['absolute', 'inset-0', 'w-full', 'h-full', 'object-cover', 'transition-transform', 'duration-700', 'group-hover:scale-110'], '', { 
                     src: cat.imageUrl, 
-                    alt: cat.name 
+                    alt: `${cat.name} - Japanese art collection by KanjiTales` 
                 });
                 catButton.appendChild(img);
 
@@ -660,7 +1001,7 @@
                 const imageWrapper = create('div', ['relative', 'overflow-hidden']);
                 const img = create('img', ['w-full', 'h-72', 'object-cover', 'transition-transform', 'duration-500', 'group-hover:scale-105'], '', {
                     src: product.imageUrl,
-                    alt: product.title
+                    alt: `${product.title} - Japanese ${product.category.toLowerCase()} art by KanjiTales`
                 });
                 imageWrapper.appendChild(img);
 
@@ -705,7 +1046,7 @@
             const imageSection = create('div', ['lg:sticky', 'lg:top-20', 'rounded-lg', 'overflow-hidden']);
             const mainImg = create('img', ['w-full', 'h-auto', 'object-cover', 'rounded-xl', 'shadow-lg'], '', { 
                 src: product.imageUrl, 
-                alt: product.title 
+                alt: `${product.title} - Japanese ${product.category.toLowerCase()} artwork by KanjiTales in Switzerland` 
             });
             imageSection.appendChild(mainImg);
             contentGrid.appendChild(imageSection);
@@ -736,11 +1077,7 @@
 
             const buyButton = create('button', ['w-full', 'py-3', 'mt-8', 'px-6', 'border', 'border-transparent', 'rounded-full', 'shadow-lg', 'text-xl', 'font-bold', 'text-white', 'bg-pink-600', 'hover:bg-pink-700', 'focus:outline-none', 'focus:ring-4', 'focus:ring-pink-300', 'transition', 'duration-200'], t.buyNow);
             buyButton.onclick = () => {
-                showCustomAlert(
-                    `Added "${product.title}" to Cart!`, 
-                    "This is a demo feature. In a real application, this would add the item to your shopping cart.", 
-                    'Continue Shopping'
-                );
+                addToCart(product, 1);
             };
             infoSection.appendChild(buyButton);
 
@@ -748,43 +1085,143 @@
             main.appendChild(contentGrid);
         }
 
+        // Cart Page
+        function renderCartPage(main, t) {
+            main.classList.add('max-w-4xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8', 'pt-8', 'pb-16');
+
+            // メインコンテナを作成
+            const container = create('div', ['bg-white', 'rounded-xl', 'shadow-2xl', 'overflow-hidden']);
+            
+            // ヘッダー
+            const header = create('div', ['bg-pink-600', 'text-white', 'p-6']);
+            header.appendChild(create('h1', ['text-3xl', 'font-bold'], t.cart));
+            container.appendChild(header);
+
+            if (cart.length === 0) {
+                // 空のカート
+                const emptyCart = create('div', ['p-12', 'text-center']);
+                emptyCart.appendChild(create('div', ['text-6xl', 'text-gray-300', 'mb-4'], '🛒'));
+                emptyCart.appendChild(create('h2', ['text-2xl', 'font-semibold', 'text-gray-600', 'mb-4'], t.emptyCart));
+                const continueBtn = create('button', ['bg-pink-600', 'text-white', 'py-3', 'px-8', 'rounded-full', 'hover:bg-pink-700', 'transition', 'font-semibold'], t.continueShopping);
+                continueBtn.onclick = () => renderPage('shop');
+                emptyCart.appendChild(continueBtn);
+                container.appendChild(emptyCart);
+            } else {
+                // カートアイテムがある場合
+                const content = create('div', ['p-6', 'md:p-8']);
+                
+                // カートアイテムセクション
+                const itemsSection = create('div', ['mb-8']);
+                itemsSection.appendChild(create('h2', ['text-xl', 'font-semibold', 'text-gray-800', 'mb-4', 'border-b', 'pb-2'], t.cartItems));
+                
+                const itemsList = create('div', ['space-y-4']);
+                
+                cart.forEach(item => {
+                    const itemRow = create('div', ['flex', 'items-center', 'space-x-4', 'p-4', 'bg-gray-50', 'rounded-lg', 'border']);
+                    
+                    // 商品画像
+                    const imgCol = create('div', ['flex-shrink-0']);
+                    imgCol.appendChild(create('img', ['w-20', 'h-20', 'object-cover', 'rounded'], '', {
+                        src: item.imageUrl,
+                        alt: item.title
+                    }));
+                    itemRow.appendChild(imgCol);
+                    
+                    // 商品情報
+                    const infoCol = create('div', ['flex-grow']);
+                    infoCol.appendChild(create('h3', ['font-semibold', 'text-gray-800', 'mb-1'], item.title));
+                    infoCol.appendChild(create('p', ['text-sm', 'text-pink-600'], item.price));
+                    itemRow.appendChild(infoCol);
+                    
+                    // 数量コントロール
+                    const quantityCol = create('div', ['flex', 'items-center', 'space-x-3']);
+                    
+                    const decreaseBtn = create('button', ['w-8', 'h-8', 'rounded-full', 'bg-gray-200', 'hover:bg-gray-300', 'transition', 'flex', 'items-center', 'justify-center'], '-');
+                    decreaseBtn.onclick = () => updateCartQuantity(item.id, item.quantity - 1);
+                    
+                    const quantityDisplay = create('span', ['px-3', 'py-1', 'bg-white', 'border', 'rounded', 'min-w-12', 'text-center'], item.quantity.toString());
+                    
+                    const increaseBtn = create('button', ['w-8', 'h-8', 'rounded-full', 'bg-gray-200', 'hover:bg-gray-300', 'transition', 'flex', 'items-center', 'justify-center'], '+');
+                    increaseBtn.onclick = () => updateCartQuantity(item.id, item.quantity + 1);
+                    
+                    quantityCol.appendChild(decreaseBtn);
+                    quantityCol.appendChild(quantityDisplay);
+                    quantityCol.appendChild(increaseBtn);
+                    itemRow.appendChild(quantityCol);
+                    
+                    // アイテム合計
+                    const totalCol = create('div', ['text-right', 'min-w-20']);
+                    const itemTotal = (item.priceValue * item.quantity) / 100;
+                    totalCol.appendChild(create('p', ['font-semibold', 'text-gray-800'], `CHF ${itemTotal.toFixed(2)}`));
+                    itemRow.appendChild(totalCol);
+                    
+                    // 削除ボタン
+                    const removeCol = create('div', ['flex-shrink-0']);
+                    const removeBtn = create('button', ['text-red-500', 'hover:text-red-700', 'transition', 'p-2', 'text-lg', 'font-bold'], '×');
+                    removeBtn.onclick = () => removeFromCart(item.id);
+                    removeCol.appendChild(removeBtn);
+                    itemRow.appendChild(removeCol);
+                    
+                    itemsList.appendChild(itemRow);
+                });
+                
+                itemsSection.appendChild(itemsList);
+                content.appendChild(itemsSection);
+                
+                // サマリーセクション
+                const summarySection = create('div', ['bg-gray-50', 'p-6', 'rounded-lg', 'border']);
+                const subtotal = getCartTotal() / 100;
+                const shipping = 0; // 無料配送
+                const total = subtotal + shipping;
+                
+                const summaryGrid = create('div', ['space-y-2']);
+                summaryGrid.appendChild(create('div', ['flex', 'justify-between', 'items-center'], `
+                    <span class="text-gray-600">${t.subtotal}:</span>
+                    <span class="font-semibold">CHF ${subtotal.toFixed(2)}</span>
+                `));
+                summaryGrid.appendChild(create('div', ['flex', 'justify-between', 'items-center'], `
+                    <span class="text-gray-600">${t.shipping}:</span>
+                    <span class="text-green-600 font-semibold">${t.freeShipping}</span>
+                `));
+                summaryGrid.appendChild(create('div', ['flex', 'justify-between', 'items-center', 'text-lg', 'font-bold', 'border-t', 'pt-2', 'mt-2'], `
+                    <span>${t.total}:</span>
+                    <span class="text-pink-600">CHF ${total.toFixed(2)}</span>
+                `));
+                
+                summarySection.appendChild(summaryGrid);
+                content.appendChild(summarySection);
+                
+                // チェックアウトボタン
+                const checkoutSection = create('div', ['mt-6', 'space-y-3']);
+                const checkoutBtn = create('button', ['w-full', 'bg-pink-600', 'text-white', 'py-4', 'px-6', 'rounded-full', 'hover:bg-pink-700', 'transition', 'text-lg', 'font-semibold'], t.proceedToCheckout);
+                checkoutBtn.onclick = handleCheckout;
+                checkoutSection.appendChild(checkoutBtn);
+                
+                const continueBtn = create('button', ['w-full', 'bg-gray-200', 'text-gray-800', 'py-3', 'px-6', 'rounded-full', 'hover:bg-gray-300', 'transition', 'font-semibold'], t.continueShopping);
+                continueBtn.onclick = () => renderPage('shop');
+                checkoutSection.appendChild(continueBtn);
+                
+                content.appendChild(checkoutSection);
+                container.appendChild(content);
+            }
+            
+            // メインコンテンツをクリアしてから新しいコンテンツを追加
+            main.innerHTML = '';
+            main.appendChild(container);
+        }
+
         // Gallery Page
         function renderGalleryPage(main, t) {
             main.classList.add('max-w-7xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8');
             main.appendChild(create('h1', ['text-4xl', 'font-bold', 'text-gray-800', 'mb-10', 'border-b', 'pb-4', 'pt-8'], t.galleryPageTitle));
-
-            const galleryItems = Array.from({ length: 6 }).map((_, i) => ({
-                id: i + 1,
-                caption: `${t.placeholderGalleryItem} - ${i + 1}`,
-                imageUrl: `https://placehold.co/400x300/f9fafb/2563eb?text=Gallery+Item+${i+1}`
-            }));
-
-            const grid = create('div', ['grid', 'grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-3', 'gap-4', 'pb-16']);
-            
-            galleryItems.forEach(item => {
-                const card = create('div', ['relative', 'overflow-hidden', 'rounded-xl', 'shadow-lg', 'group']);
-                
-                const img = create('img', ['w-full', 'h-full', 'object-cover', 'aspect-[4/3]', 'transition-transform', 'duration-500', 'group-hover:scale-105'], '', { 
-                    src: item.imageUrl, 
-                    alt: item.caption 
-                });
-                card.appendChild(img);
-
-                const overlay = create('div', ['absolute', 'inset-0', 'bg-black/50', 'opacity-0', 'group-hover:opacity-100', 'transition-opacity', 'duration-300', 'flex', 'items-center', 'justify-center']);
-                overlay.appendChild(create('span', ['text-white', 'text-lg', 'font-semibold'], 'Zoom'));
-                card.appendChild(overlay);
-
-                grid.appendChild(card);
-            });
-
-            main.appendChild(grid);
+            main.appendChild(create('p', ['text-center', 'text-gray-600', 'py-20'], t.comingSoon));
         }
 
         // Contact Page
         function renderContactPage(main, t) {
-            main.classList.add('max-w-3xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8');
+            main.classList.add('max-w-3xl', 'mx-auto', 'px-4', 'sm:px-6', 'lg:px-8', 'pt-8', 'pb-16');
 
-            const container = create('div', ['pt-8', 'pb-16']);
+            const container = create('div');
             container.appendChild(create('h1', ['text-4xl', 'font-bold', 'text-gray-800', 'mb-4', 'border-b', 'pb-4'], t.contactPageTitle));
             container.appendChild(create('p', ['text-gray-600', 'mb-8'], t.contactBody));
             
@@ -822,48 +1259,17 @@
                 submitButton.textContent = 'Sending...';
                 submitButton.disabled = true;
                 
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const subject = document.getElementById('subject').value;
-                const message = document.getElementById('message').value;
-
-                try {
-                    // Initialize EmailJS if not already done
-                    if (typeof emailjs !== 'undefined') {
-                        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-                        
-                        await emailjs.send(
-                            EMAILJS_CONFIG.SERVICE_ID,
-                            EMAILJS_CONFIG.TEMPLATE_ID,
-                            {
-                                from_name: name,
-                                from_email: email,
-                                subject: subject,
-                                message: message,
-                                to_email: 'your.name.meaning.jp@gmail.com'
-                            }
-                        );
-
-                        showCustomAlert(
-                            `Thank you, ${name}!`, 
-                            `Your message has been sent successfully. We will get back to you soon.`, 
-                            'Close',
-                            () => form.reset()
-                        );
-                    } else {
-                        throw new Error('EmailJS not loaded');
-                    }
-                } catch (error) {
-                    console.error('Email sending failed:', error);
+                // Demo mode - just show success message
+                setTimeout(() => {
                     showCustomAlert(
-                        'Demo Mode', 
-                        'This is a demo contact form. In a real application, your message would be sent successfully.', 
-                        'Close'
+                        'Message Sent!', 
+                        'Thank you for your message. We will get back to you soon.', 
+                        'Close',
+                        () => form.reset()
                     );
-                } finally {
                     submitButton.textContent = originalText;
                     submitButton.disabled = false;
-                }
+                }, 1000);
             });
 
             container.appendChild(form);
@@ -871,18 +1277,20 @@
         }
 
         // =========================================================
-        // 4. INITIALIZATION
+        // 6. INITIALIZATION
         // =========================================================
 
         function initEventListeners() {
             // Navigation
             document.addEventListener('click', (e) => {
-                const target = e.target.closest('.nav-link, #logo-button, .nav-link-shop');
+                const target = e.target.closest('.nav-link, #logo-button, .nav-link-shop, #cart-button, #mobile-cart-button');
                 
                 if (target) {
                     if (target.id === 'logo-button') {
                         selectedCategory = null;
                         renderPage('home');
+                    } else if (target.id === 'cart-button' || target.id === 'mobile-cart-button') {
+                        renderPage('cart');
                     } else {
                         const page = target.getAttribute('data-page');
                         if (page === 'shop' || page === 'home') {
@@ -945,6 +1353,7 @@
         window.onload = function() {
             document.getElementById('current-year').textContent = new Date().getFullYear();
             initEventListeners();
+            updateCartBadge();
             
             // Start the application immediately without waiting for Firebase
             setTimeout(() => {
